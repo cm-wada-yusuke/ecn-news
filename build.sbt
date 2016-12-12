@@ -4,7 +4,10 @@ lazy val commonSettings = Seq(
   scalaVersion := "2.11.8",
   scalaSource in Compile <<= (baseDirectory in Compile) (_ / "app"),
   scalaSource in Test <<= (baseDirectory in Test) (_ / "test"),
-  resolvers += "maven" at "https://mvnrepository.com/"
+  resolvers += "maven" at "https://mvnrepository.com/",
+  javaOptions ++= sys.process.javaVmArguments.filter(
+    a => Seq("-Xmx", "-Xms", "-XX").exists(a.startsWith)
+  )
 )
 
 lazy val root = (project in file("."))

@@ -8,7 +8,6 @@ import examples.MockWorkerMessageJson
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.inject._
-import play.api.test.Helpers.running
 import workers.NewsProcessSupervisor
 
 class NewsWorkerAppSpec extends PlaySpecApplication {

@@ -4,7 +4,6 @@ import javax.inject.Inject
 
 import akka.actor.{ Actor, ActorRef, Props }
 import services.{ NewsMessageDeleteService, NewsMessageReceiveService }
-import tasks.{ ContentRegisterTask, MasterRegisterTask }
 import workers.NewsProcessSupervisor.{ Ping, Pong }
 import workers.config.NewsConfig
 
