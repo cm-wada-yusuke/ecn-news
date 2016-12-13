@@ -6,6 +6,7 @@ import akka.actor.ActorSystem
 import com.amazonaws.regions.{ Region, Regions }
 import com.amazonaws.services.sqs.AmazonSQSClient
 import com.google.inject.{ AbstractModule, Provides, Singleton }
+import controllers.Environment
 import infrastructure.NewsQueueClient
 import infrastructure.config.NewsQueueConfig
 import play.api.Configuration
@@ -15,11 +16,15 @@ import workers.config.NewsConfig
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
 
-class WorkerDependencyModule extends AbstractModule {
+class DependencyModule extends AbstractModule {
 
   override def configure(): Unit = {
     bind(classOf[NewsQueue]).to(classOf[NewsQueueClient])
   }
+
+  @Provides
+  def provideEnvironmentConfig(configuration: Configuration): Environment =
+    Environment(configuration.getString("environment").get)
 
   @Provides
   @Singleton

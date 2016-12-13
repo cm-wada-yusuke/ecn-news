@@ -1,0 +1,3 @@
+
+# health check
+GET        /healthcheck        controllers.ApplicationController.healthCheck
