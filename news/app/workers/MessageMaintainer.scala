@@ -33,8 +33,10 @@ class MessageMaintainer(
       }
     case MaintainSucceeded(operation, messageToken) =>
       log.info(s"News Job succeeded:$operation, $messageToken")
+      deleter ! MessageDeleter.Delete(messageToken)
     case MaintainFailed(operation, messageToken, e) =>
       log.warning(s"News Job succeeded:$operation, $messageToken", e)
+      deleter ! MessageDeleter.Delete(messageToken)
   }
 }
 

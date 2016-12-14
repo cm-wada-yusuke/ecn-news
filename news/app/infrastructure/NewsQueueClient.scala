@@ -8,9 +8,11 @@ import domain.common.{ MessageToken, ReceivedMessage }
 import domain.news.NewsMessage
 import infrastructure.config.NewsQueueConfig
 import infrastructures.common.ReceivedMessageConverters
+import play.api.Logger
 import services.NewsQueue
 
 import scala.concurrent.{ ExecutionContext, Future }
+import scala.util.{ Failure, Success, Try }
 
 class NewsQueueClient @Inject()(
     sqsClient: AmazonSQSClient,
@@ -22,11 +24,20 @@ class NewsQueueClient @Inject()(
 
     import scala.collection.JavaConverters._
 
-    val req = new ReceiveMessageRequest(config.url)
-    val res = sqsClient.receiveMessage(req)
-    res.getMessages.asScala.toList map { message =>
-      ReceivedMessageConverters.toReceivedMessage(message)(NewsMessageFormat)
+    Try {
+      val req = new ReceiveMessageRequest(config.url)
+      sqsClient.receiveMessage(req)
+    } match {
+      case Success(r) =>
+        r.getMessages.asScala.toList map { message =>
+          ReceivedMessageConverters.toReceivedMessage(message)(NewsMessageFormat)
+        }
+      case Failure(e) =>
+        Logger.error("ReceiveMessage Failed.", e)
+        throw new IllegalArgumentException(e)
     }
+
+
   }
 
   override def delete(token: MessageToken): Future[Unit] = Future {
