@@ -44,6 +44,17 @@ lazy val news = project.in(file("./news"))
     )
     .dependsOn(library % "test->test;compile->compile")
 
+lazy val script = project.in(file("./script"))
+    .enablePlugins(PlayScala)
+    .settings(commonSettings: _*)
+    .settings(
+      name := "ecn-worker-script",
+      version := "0.1.0"
+    )
+    .settings(libraryDependencies ++= Seq(
+    ))
+    .dependsOn(library % "test->test;compile->compile")
+
 
 // Docker settings
 
