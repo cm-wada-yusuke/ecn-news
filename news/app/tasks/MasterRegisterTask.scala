@@ -13,6 +13,8 @@ import scala.util.{ Failure, Success }
 class MasterRegisterTask(
     maintainer: ActorRef
 ) extends Actor with ActorLogging {
+
+
   override def receive: Receive = LoggingReceive {
     case Maintain(message, token) =>
       doTask(message).onComplete {

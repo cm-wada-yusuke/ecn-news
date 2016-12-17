@@ -2,7 +2,9 @@ package tasks
 
 import akka.actor.{ Actor, ActorLogging, ActorRef }
 import akka.event.LoggingReceive
+import domain.news.content.{ Content, ContentJob }
 import domain.news.{ ContentOperation, NewsMessage }
+import services.ContentRegisterService
 import workers.MessageMaintainer
 import workers.MessageMaintainer.Maintain
 
@@ -11,7 +13,8 @@ import scala.concurrent.Future
 import scala.util.{ Failure, Success }
 
 class ContentRegisterTask(
-    maintainer: ActorRef
+    maintainer: ActorRef,
+    contentRegisterService: ContentRegisterService
 ) extends Actor with ActorLogging {
 
   override def receive: Receive = LoggingReceive {
@@ -22,8 +25,17 @@ class ContentRegisterTask(
       }
   }
 
-  private def doTask(newsMessage: NewsMessage): Future[Unit] = {
-    // TODO: 最終的にはDynamoDBに書き込むが、ひとまずはログに書き出すところまで。
-    Future { log.info("Write DynamoDB user content data.") }
+  private def doTask(newsMessage: NewsMessage): Future[Unit] =
+    contentRegisterService.register(convertToContent(newsMessage)).map { _ =>
+      log.info("Write DynamoDB user content data.")
+    }
+
+
+  private def convertToContent(newsMessage: NewsMessage): Content = {
+    val job = newsMessage.job.asInstanceOf[ContentJob]
+    Content(
+      userId = job.userId,
+      newsId = job.newsId
+    )
   }
 }

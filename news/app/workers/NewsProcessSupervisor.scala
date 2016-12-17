@@ -3,13 +3,14 @@ package workers
 import javax.inject.Inject
 
 import akka.actor.{ Actor, ActorRef, Props }
-import services.{ NewsMessageDeleteService, NewsMessageReceiveService }
+import services.{ ContentRegisterService, NewsMessageDeleteService, NewsMessageReceiveService }
 import workers.NewsProcessSupervisor.{ Ping, Pong }
 import workers.config.NewsConfig
 
 class NewsProcessSupervisor @Inject()(
     receiveService: NewsMessageReceiveService,
     deleteService: NewsMessageDeleteService,
+    contentRegisterService: ContentRegisterService,
     config: NewsConfig
 ) extends Actor {
 
@@ -21,7 +22,7 @@ class NewsProcessSupervisor @Inject()(
   ), "MessageDeleter")
 
   val maintainer: ActorRef = context.actorOf(Props(
-    classOf[MessageMaintainer], deleter
+    classOf[MessageMaintainer], deleter, contentRegisterService
   ), "MessageMaintainer")
 
   val receiver: ActorRef = context.actorOf(Props(

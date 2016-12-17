@@ -5,11 +5,13 @@ import akka.event.LoggingReceive
 import domain.common.MessageToken
 import domain.news.NewsMessage
 import domain.news.{ ContentOperation, MasterOperation, Operation }
+import services.ContentRegisterService
 import tasks.{ ContentRegisterTask, MasterRegisterTask }
 import workers.MessageMaintainer.{ Maintain, MaintainFailed, MaintainSucceeded }
 
 class MessageMaintainer(
-    deleter: ActorRef
+    deleter: ActorRef,
+    contentRegisterService: ContentRegisterService
 ) extends Actor with ActorLogging {
 
   /**
@@ -20,7 +22,7 @@ class MessageMaintainer(
   ), "MasterRegisterTask")
 
   val contentRegisterTask: ActorRef = context.actorOf(Props(
-    classOf[ContentRegisterTask], self
+    classOf[ContentRegisterTask], self, contentRegisterService
   ), "ContentRegisterTask")
 
 
