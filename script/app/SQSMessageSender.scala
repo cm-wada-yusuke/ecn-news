@@ -1,6 +1,7 @@
+import java.util.UUID
+
 import com.amazonaws.regions.{ Region, Regions }
 import com.amazonaws.services.sqs.AmazonSQSClient
-import com.amazonaws.services.sqs.model.Message
 
 object SQSMessageSender {
 
@@ -12,32 +13,34 @@ object SQSMessageSender {
 
   def main(args: Array[String]): Unit = {
     val queueUrl = sys.env("NEWS_QUEUE_URL")
-    sqsClient.sendMessage(queueUrl, MockWorkerMessageJson.newsContentRegisterMessage)
+    // まずは100メッセージから
+    1 to 100 foreach {
+      i => send(queueUrl, i.toLong, UUID.randomUUID().toString)
+    }
+    sqsClient.shutdown()
+  }
+
+  private def send(queueUrl: String, userId: Long, newsId: String): Unit = {
+    sqsClient.sendMessage(
+      queueUrl,
+      MockWorkerMessageJson.newsContentRegisterMessage(userId, newsId)
+    )
+  }
+
+  object MockWorkerMessageJson {
+
+    def newsContentRegisterMessage(userId: Long, newsId: String): String =
+      s"""
+         |{
+         |  "operation":1,
+         |  "job":{
+         |     "userId": ${ userId },
+         |     "newsId": "${ newsId }"
+         |  }
+         |}
+    """.stripMargin
+
   }
 
 }
 
-object MockWorkerMessageJson {
-
-  val newsMasterRegisterMessage: String =
-    """
-      |{
-      |  "operation":0,
-      |  "job":{
-      |     "newsId": "aeorfq93rghdi"
-      |  }
-      |}
-    """.stripMargin
-
-  val newsContentRegisterMessage: String =
-    """
-      |{
-      |  "operation":1,
-      |  "job":{
-      |     "userId": 200014235534,
-      |     "newsId": "aeorfq93rghdi"
-      |  }
-      |}
-    """.stripMargin
-
-}
