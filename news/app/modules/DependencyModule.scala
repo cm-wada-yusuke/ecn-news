@@ -9,8 +9,8 @@ import com.amazonaws.services.dynamodbv2.document.DynamoDB
 import com.amazonaws.services.sqs.AmazonSQSClient
 import com.google.inject.{ AbstractModule, Provides, Singleton }
 import controllers.Environment
-import infrastructure.{ ContentDBClient, NewsQueueClient }
 import infrastructure.config.{ ContentDBConfig, NewsQueueConfig }
+import infrastructure.{ ContentDBClient, NewsQueueClient }
 import play.api.Configuration
 import services.{ ContentStore, NewsQueue }
 import workers.config.NewsConfig
@@ -43,9 +43,9 @@ class DependencyModule extends AbstractModule {
   }
 
   @Provides
-  def provideDynamoDBClient: DynamoDB = {
+  def provideDynamoDB(configuration: Configuration): DynamoDB = {
     val client = new AmazonDynamoDBClient()
-    client.setRegion(Region.getRegion(Regions.AP_NORTHEAST_1))
+    client.setEndpoint(configuration.getString("dynamoDB.endPoint").get)
     new DynamoDB(client)
   }
 

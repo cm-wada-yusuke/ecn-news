@@ -12,15 +12,15 @@ object MockWorkerMessageJson {
       |}
     """.stripMargin
 
-  val newsContentRegisterMessage: String =
-    """
-      |{
-      |  "operation":1,
-      |  "job":{
-      |     "userId": 200014235534,
-      |     "newsId": "aeorfq93rghdi"
-      |  }
-      |}
+  def newsContentRegisterMessage(userId: Long, newsId: String): String =
+    s"""
+       |{
+       |  "operation":1,
+       |  "job":{
+       |     "userId": ${ userId },
+       |     "newsId": "${ newsId }"
+       |  }
+       |}
     """.stripMargin
 
 }

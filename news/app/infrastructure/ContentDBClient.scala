@@ -8,10 +8,12 @@ import com.amazonaws.services.dynamodbv2.document.{ DynamoDB, Item, PrimaryKey }
 import domain.news.content.Content
 import infrastructure.ContentDBClient.{ AttributeName, ContentConverter, ItemConverter, PrimaryKeyConverter }
 import infrastructure.config.ContentDBConfig
+import play.api
 import services.ContentStore
 
 import scala.collection.JavaConverters._
 import scala.concurrent.{ ExecutionContext, Future }
+import scala.util.{ Failure, Success, Try }
 
 class ContentDBClient @Inject()(
     db: DynamoDB,
@@ -23,12 +25,12 @@ class ContentDBClient @Inject()(
   private val table = db.getTable(contentDBConfig.tableName)
 
   override def store(content: Content): Future[Unit] = Future {
-    val updateItemSpec: UpdateItemSpec = new UpdateItemSpec()
-        .withPrimaryKey(toPrimaryKey(content.userId))
-        .withUpdateExpression("SET #newsId = list_append(#newsId, :i)")
-        .withNameMap(new NameMap().`with`("#newsId", AttributeName.NewsId))
-        .withValueMap(Map[String, AnyRef](":i" -> content.newsId).asJava)
-    table.updateItem(updateItemSpec)
+    Try {
+      table.putItem(toNewItem(content.userId, content.newsId))
+    } match {
+      case Success(_) =>
+      case Failure(e) => api.Logger.error("dynamoDB update failed.", e)
+    }
   }
 }
 
