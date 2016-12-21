@@ -18,7 +18,7 @@ lazy val library = project.in(file("./library")).enablePlugins(PlayScala)
     .settings(libraryDependencies ++= Seq(
       "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % "test",
       "com.typesafe.akka" %% "akka-testkit" % "2.4.14" % "test",
-      "com.amazonaws" % "aws-java-sdk" % "1.10.1",
+      "com.amazonaws" % "aws-java-sdk" % "1.11.70",
       "org.scalatest" % "scalatest_2.11" % "3.0.1"
     ))
     .settings(

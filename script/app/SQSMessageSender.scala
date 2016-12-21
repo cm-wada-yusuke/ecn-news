@@ -19,10 +19,10 @@ object SQSMessageSender {
     //    1 to 10 foreach {
     //      i => send((i - 1) * 1000 + 1 to i * 1000)
     //    }
-    send(7004 to 10000)
+    send(1 to 100)
   }
 
-  private def send(userIdRange: Range): Future[Unit] = Future {
+  private def send(userIdRange: Range): Unit = {
     userIdRange.foreach { i =>
       sqsClient.sendMessage(
         queueUrl,
